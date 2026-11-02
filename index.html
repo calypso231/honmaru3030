@@ -135,8 +135,50 @@ header b{min-width:0}
 #sm .bk{width:auto;padding:4px 10px;font-size:12px}
 #sm .clr{text-align:center;color:var(--bad);font-size:12px}
 </style>
+<style>
+/* 계절감: html[data-season]에 따라 포인트 색, 배경 기운, 떨어지는 입자가 바뀝니다 */
+:root[data-season="spring"]{--acc:#c0506a;--pc:#f2b5c4;--tint:rgba(240,170,190,.20)}
+:root[data-season="summer"]{--acc:#2f7f6a;--pc:#c9a227;--tint:rgba(90,170,140,.16)}
+:root[data-season="autumn"]{--acc:#b4481e;--pc:#d9772b;--tint:rgba(220,130,50,.18)}
+:root[data-season="winter"]{--acc:#40607f;--pc:#aebfd4;--tint:rgba(150,180,215,.22)}
+@media (prefers-color-scheme:dark){
+:root[data-season="spring"]:not([data-theme="light"]){--acc:#f093ab;--pc:#f6bccb;--tint:rgba(240,150,180,.12)}
+:root[data-season="summer"]:not([data-theme="light"]){--acc:#6fcfa6;--pc:#e0e88a;--tint:rgba(90,200,150,.10)}
+:root[data-season="autumn"]:not([data-theme="light"]){--acc:#f08a55;--pc:#f0a65a;--tint:rgba(240,140,70,.12)}
+:root[data-season="winter"]:not([data-theme="light"]){--acc:#9cbde3;--pc:#e6eef8;--tint:rgba(150,185,230,.12)}
+}
+:root[data-theme="dark"][data-season="spring"]{--acc:#f093ab;--pc:#f6bccb;--tint:rgba(240,150,180,.12)}
+:root[data-theme="dark"][data-season="summer"]{--acc:#6fcfa6;--pc:#e0e88a;--tint:rgba(90,200,150,.10)}
+:root[data-theme="dark"][data-season="autumn"]{--acc:#f08a55;--pc:#f0a65a;--tint:rgba(240,140,70,.12)}
+:root[data-theme="dark"][data-season="winter"]{--acc:#9cbde3;--pc:#e6eef8;--tint:rgba(150,185,230,.12)}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+#fx::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,var(--tint,transparent),transparent 55%)}
+.fxp{position:absolute;display:block;left:var(--x);top:-24px;width:var(--s);height:var(--s);background:var(--pc);opacity:0;animation:fxfall var(--d) linear var(--dl) infinite}
+.fxp.spring{border-radius:70% 0 70% 0}
+.fxp.autumn{border-radius:0 80% 0 80%}
+.fxp.winter{border-radius:50%;box-shadow:0 0 4px var(--pc)}
+.fxp.summer{top:var(--y);border-radius:50%;box-shadow:0 0 8px 2px var(--pc);animation:fxflit var(--d) ease-in-out var(--dl) infinite}
+@keyframes fxfall{0%{transform:translate3d(0,-4vh,0) rotate(0);opacity:0}10%{opacity:.75}90%{opacity:.75}100%{transform:translate3d(var(--dx),108vh,0) rotate(360deg);opacity:0}}
+@keyframes fxflit{0%,100%{transform:translate3d(0,0,0);opacity:0}25%{opacity:.9}50%{transform:translate3d(var(--dx),-6vh,0);opacity:.25}75%{opacity:.9}}
+:root[data-season="spring"] #day::before{content:'春 ';color:var(--acc)}
+:root[data-season="summer"] #day::before{content:'夏 ';color:var(--acc)}
+:root[data-season="autumn"] #day::before{content:'秋 ';color:var(--acc)}
+:root[data-season="winter"] #day::before{content:'冬 ';color:var(--acc)}
+#day::before{font-weight:700}
+#pb i{transition:background-color .8s}
+@media (prefers-reduced-motion:reduce){.fxp{display:none}}
+</style>
+<style>
+#pb{background:linear-gradient(90deg,rgba(150,180,215,.38) 0 16.67%,rgba(240,170,190,.45) 16.67% 41.67%,rgba(90,170,140,.42) 41.67% 66.67%,rgba(220,130,50,.42) 66.67% 91.67%,rgba(150,180,215,.38) 91.67% 100%)}
+#game::before,#intro::before{background:radial-gradient(circle at 50% 100%,transparent 55%,var(--acc) 56%,var(--acc) 63%,transparent 64%) 0 0/20px 10px;opacity:.5;transition:opacity .8s}
+header{border-bottom-color:var(--acc)}
+.l .d{color:var(--acc);opacity:.9}
+#iq h4.deal::before{content:'【密】 '}
+</style>
+
 </head>
 <body>
+<div id="fx" aria-hidden="true"></div>
 <div id="app">
   <div id="intro">
     <div class="lgw"><button class="lg" onclick="toggleLang()"></button></div>
@@ -171,7 +213,7 @@ const NAMES={ko:["야만바기리 쿠니히로", "카슈 키요미츠", "하치�
 const L={
 ko:{
 SWD:["출진 사고 확률 대폭 감소", "연회 신뢰도 +6 추가", "밭일 수확 +2", "출진 옥강 +2", "휴식 신뢰도 +3, 영력 감소 완화"],
-EF:{food:'군량',en:'영력',mat:'옥강',mo:'신뢰도',lv:'강화',gi:'기분',go:'상대 기분',gain:'합류',hp:'체력',ha:'전원 체력',ma:'전원 기분',eq:'장비'},
+EF:{food:'군량',en:'영력',mat:'옥강',mo:'신뢰도',lv:'강화',gi:'기분',go:'상대 기분',gain:'합류',deal:'출진 중단 · 위험 이벤트 차단',hp:'체력',ha:'전원 체력',ma:'전원 기분',eq:'장비'},
 IS:[
 [n=>'['+n+'] 연일 출진으로 지쳐 보입니다.',[['출진을 쉬게 합니다',{mo:10,mat:-3},'출진을 쉬게 했습니다.'],['격려하고 계속 보냅니다',{mo:-5,mat:4},'격려 후 출진을 이어갔습니다.'],['연회로 위로합니다',{mo:15,food:-4},'연회를 열어 위로했습니다.']]],
 [n=>'['+n+'] 다른 도검과 훈련 방식을 두고 다투었습니다.',[['직접 중재합니다',{en:-3,mo:6},'사니와가 직접 중재에 나섰습니다.'],['합동 훈련으로 가립니다',{mat:-5,mo:4,food:-1},'합동 훈련으로 승부를 냈습니다.'],['스스로 풀게 둡니다',{mo:-6,en:2},'당사자들에게 맡겨 두었습니다.']]],
@@ -326,6 +368,22 @@ W:[
 ['역행군에 밀려 부상을 입고 돌아왔습니다',{mo:-2,mat:-1}],
 ['투덜대며 당번을 땡땡이쳤습니다',{mo:-1}]
 ],
+WS:[
+[['벚꽃 아래에서 도시락을 펼쳐 놓고 꽃놀이를 즐겼습니다',{mo:2}],['봄나물을 캐 와 상에 올렸습니다',{food:[2,3]}],['밭에 씨앗을 뿌리며 풍작을 빌었습니다',{food:[1,3]}],['흩날리는 꽃잎 속에서 검술 수련을 했습니다',{mo:1}]],
+[['시원한 냇가에서 수박을 나눠 먹었습니다',{mo:2}],['반딧불이가 날아다니는 밤에 툇마루에서 부채질을 했습니다',{mo:2}],['뜨거운 햇볕 아래에서 밭에 물을 길어 날랐습니다',{food:[1,3]}],['풍경 소리를 들으며 낮잠을 즐겼습니다',{mo:1}]],
+[['단풍잎을 주워 책갈피로 만들었습니다',{mo:1}],['밤과 감을 따 와 간식으로 나눠 먹었습니다',{food:[2,3]}],['보름달 아래에서 달맞이 경단을 빚었습니다',{mo:2}],['추수한 곡식으로 창고를 가득 채웠습니다',{food:[2,4]}]],
+[['눈이 쌓인 마당에서 눈사람을 만들었습니다',{mo:2}],['화로 곁에 둘러앉아 따뜻한 차를 나눠 마셨습니다',{mo:2}],['눈 쌓인 길을 쓸고 장작을 패 두었습니다',{mat:1}],['겨울 채비로 절임 항아리를 땅에 묻었습니다',{food:[1,3]}]]
+],
+DLS:[
+[[n=>'['+n+'] 벚꽃이 한창이니 꽃놀이 자리를 마련하자고 합니다.',[['도시락을 싸서 함께 꽃놀이를 갑니다',{food:-2,mo:2,gi:11},'도시락을 싸서 함께 꽃놀이를 다녀왔습니다.'],['마당의 벚나무 아래에서 조용히 즐깁니다',{mo:1,gi:6},'마당의 벚나무 아래에서 조용히 꽃을 즐겼습니다.'],['일이 바쁘니 다음으로 미룹니다',{mo:-1,gi:-5},'꽃놀이를 다음 기회로 미뤘습니다.']]],
+[n=>'['+n+'] 봄 밭갈이를 서두르자며 일손을 청합니다.',[['모두 함께 밭갈이를 합니다',{food:6,en:-1,gi:6},'모두 함께 밭을 갈았습니다.'],['자원자만 보냅니다',{food:3,gi:3},'자원자만 모아 밭을 갈게 했습니다.'],['출진 준비가 먼저라고 합니다',{mat:1,gi:-4},'출진 준비가 먼저라고 말했습니다.']]]],
+[[n=>'['+n+'] 무더위에 시원한 냇가에서 물놀이를 하고 싶다고 합니다.',[['모두 함께 다녀옵니다',{food:-1,mo:2,gi:12},'모두 함께 냇가에서 물놀이를 했습니다.'],['발만 담그게 합니다',{mo:1,gi:5},'발만 담그고 오게 했습니다.'],['더위를 참고 일하라고 합니다',{mat:1,mo:-2,gi:-6},'더위를 참고 일하라고 했습니다.']]],
+[n=>'['+n+'] 반딧불이를 보러 밤 산책을 가자고 청합니다.',[['함께 반딧불이를 보러 갑니다',{en:-1,mo:2,gi:12},'함께 반딧불이를 보러 갔습니다.'],['툇마루에서 멀리 바라보게 합니다',{mo:1,gi:5},'툇마루에서 멀리 바라보게 했습니다.'],['밤길은 위험하다며 말립니다',{mo:-1,gi:-4},'밤길은 위험하다며 말렸습니다.']]]],
+[[n=>'['+n+'] 단풍이 곱게 들었다며 단풍놀이를 가자고 합니다.',[['함께 단풍놀이를 다녀옵니다',{food:-1,mo:2,gi:11},'함께 단풍놀이를 다녀왔습니다.'],['떨어진 단풍잎으로 장식을 합니다',{mo:1,gi:6},'단풍잎으로 방을 장식했습니다.'],['추수가 먼저라고 합니다',{food:2,gi:-4},'추수가 먼저라고 말했습니다.']]],
+[n=>'['+n+'] 보름달이 뜨는 밤에 달맞이 경단을 빚고 싶다고 합니다.',[['경단을 빚어 달맞이를 합니다',{food:-2,mo:3,gi:13},'경단을 빚어 함께 달맞이를 했습니다.'],['조용히 달만 보게 합니다',{mo:1,gi:5},'조용히 달을 보게 했습니다.'],['쌀이 아깝다며 말립니다',{food:1,mo:-1,gi:-5},'쌀이 아깝다며 말렸습니다.']]]],
+[[n=>'['+n+'] 눈이 쌓였다며 눈사람을 만들고 싶다고 합니다.',[['모두 함께 눈사람을 만듭니다',{mo:2,gi:12},'모두 함께 눈사람을 만들었습니다.'],['마당 구석에서만 하게 합니다',{mo:1,gi:5},'마당 구석에서만 하게 했습니다.'],['눈 쌓인 길부터 쓸라고 합니다',{mat:1,mo:-1,gi:-5},'눈 쌓인 길부터 쓸라고 했습니다.']]],
+[n=>'['+n+'] 추우니 화로 곁에서 따뜻한 죽을 끓여 먹자고 합니다.',[['함께 따뜻한 죽을 끓입니다',{food:-2,mo:3,gi:12},'함께 따뜻한 죽을 끓여 먹었습니다.'],['화로만 쬐게 합니다',{mo:1,gi:4},'화로만 쬐게 했습니다.'],['땔감이 아깝다며 참으라고 합니다',{mat:1,mo:-2,gi:-6},'땔감이 아깝다며 참으라고 했습니다.']]]]
+],
 PL:{
 '야만바기리 쿠니히로':['천을 뒤집어쓴 채 구석에서 홀로 수련했습니다',{mo:1}],
 '카슈 키요미츠':['손톱 손질을 하며 단장에 몰두했습니다',{mo:2}],
@@ -346,7 +404,7 @@ PL:{
 },
 ja:{
 SWD:["出陣時の事故確率が大幅減少", "宴会での信頼度 +6 追加", "畑当番の収穫 +2", "出陣時の玉鋼 +2", "休息時の信頼度 +3、霊力減少を緩和"],
-EF:{food:'兵糧',en:'霊力',mat:'玉鋼',mo:'信頼度',lv:'強化',gi:'気分',go:'相手の気分',gain:'顕現',hp:'生存',ha:'全員の生存',ma:'全員の気分',eq:'装備'},
+EF:{food:'兵糧',en:'霊力',mat:'玉鋼',mo:'信頼度',lv:'強化',gi:'気分',go:'相手の気分',gain:'顕現',deal:'出陣中止・危険イベント遮断',hp:'生存',ha:'全員の生存',ma:'全員の気分',eq:'装備'},
 IS:[
 [n=>'['+n+'] 連日の出陣で疲れているようです。',[['出陣を休ませる',{mo:10,mat:-3},'出陣を休ませました。'],['励まして引き続き送り出す',{mo:-5,mat:4},'励まして出陣を続けさせました。'],['宴会を開いて労う',{mo:15,food:-4},'宴会を開いて労いました。']]],
 [n=>'['+n+'] 他の刀剣と鍛錬の方針をめぐって言い争いました。',[['直接仲裁する',{en:-3,mo:6},'審神者が直接仲裁に入りました。'],['合同鍛錬で決着をつけさせる',{mat:-5,mo:4,food:-1},'合同鍛錬で勝負をつけさせました。'],['本人たちに任せる',{mo:-6,en:2},'当事者たちに任せておきました。']]],
@@ -501,6 +559,22 @@ W:[
 ['遡行軍に押されて負傷し帰還しました',{mo:-2,mat:-1}],
 ['ぶつぶつ言いながら当番をサボりました',{mo:-1}]
 ],
+WS:[
+[['桜の下で弁当を広げ、お花見を楽しみました',{mo:2}],['春の山菜を摘んで膳に並べました',{food:[2,3]}],['畑に種をまき、豊作を祈りました',{food:[1,3]}],['舞い散る花びらの中で剣の稽古をしました',{mo:1}]],
+[['涼しい川辺でスイカを分け合って食べました',{mo:2}],['蛍の舞う夜、縁側で団扇を扇ぎました',{mo:2}],['照りつける日差しの下、畑に水を運びました',{food:[1,3]}],['風鈴の音を聞きながら昼寝をしました',{mo:1}]],
+[['紅葉を拾って栞を作りました',{mo:1}],['栗と柿を採ってきて、おやつに分けました',{food:[2,3]}],['満月の下で月見団子を作りました',{mo:2}],['収穫した穀物で蔵をいっぱいにしました',{food:[2,4]}]],
+[['雪の積もった庭で雪だるまを作りました',{mo:2}],['囲炉裏を囲んで温かいお茶を分け合いました',{mo:2}],['雪の積もった道を掃き、薪を割っておきました',{mat:1}],['冬支度に漬物の甕を土に埋めました',{food:[1,3]}]]
+],
+DLS:[
+[[n=>'['+n+'] 桜が見頃なので、お花見の席を設けようと言っています。',[['弁当を作って皆でお花見に行きます',{food:-2,mo:2,gi:11},'弁当を作って皆でお花見に行きました。'],['庭の桜の下で静かに楽しみます',{mo:1,gi:6},'庭の桜の下で静かに花を楽しみました。'],['忙しいので次の機会にします',{mo:-1,gi:-5},'お花見は次の機会に延ばしました。']]],
+[n=>'['+n+'] 春の畑起こしを急ごうと、人手を頼んでいます。',[['皆で一緒に畑を耕します',{food:6,en:-1,gi:6},'皆で一緒に畑を耕しました。'],['志願者だけを行かせます',{food:3,gi:3},'志願者だけで畑を耕させました。'],['出陣の準備が先だと伝えます',{mat:1,gi:-4},'出陣の準備が先だと伝えました。']]]],
+[[n=>'['+n+'] 蒸し暑いので、涼しい川辺で水遊びをしたいと言っています。',[['皆で一緒に行ってきます',{food:-1,mo:2,gi:12},'皆で川辺へ水遊びに行きました。'],['足だけ浸からせます',{mo:1,gi:5},'足だけ浸かって戻らせました。'],['暑さを我慢して働くよう伝えます',{mat:1,mo:-2,gi:-6},'暑さを我慢して働くよう伝えました。']]],
+[n=>'['+n+'] 蛍を見に夜の散歩へ行こうと誘っています。',[['一緒に蛍を見に行きます',{en:-1,mo:2,gi:12},'一緒に蛍を見に行きました。'],['縁側から遠くを眺めさせます',{mo:1,gi:5},'縁側から遠くの蛍を眺めさせました。'],['夜道は危ないと止めます',{mo:-1,gi:-4},'夜道は危ないと止めました。']]]],
+[[n=>'['+n+'] 紅葉が美しく色づいたので、紅葉狩りに行こうと言っています。',[['一緒に紅葉狩りに行ってきます',{food:-1,mo:2,gi:11},'一緒に紅葉狩りに行ってきました。'],['落ち葉で部屋を飾らせます',{mo:1,gi:6},'紅葉の葉で部屋を飾りました。'],['収穫が先だと伝えます',{food:2,gi:-4},'収穫が先だと伝えました。']]],
+[n=>'['+n+'] 満月の夜に、月見団子を作りたいと言っています。',[['団子を作ってお月見をします',{food:-2,mo:3,gi:13},'団子を作って一緒にお月見をしました。'],['静かに月だけ眺めさせます',{mo:1,gi:5},'静かに月を眺めさせました。'],['お米がもったいないと止めます',{food:1,mo:-1,gi:-5},'お米がもったいないと止めました。']]]],
+[[n=>'['+n+'] 雪が積もったので、雪だるまを作りたいと言っています。',[['皆で一緒に雪だるまを作ります',{mo:2,gi:12},'皆で一緒に雪だるまを作りました。'],['庭の隅だけで遊ばせます',{mo:1,gi:5},'庭の隅だけで遊ばせました。'],['まず雪かきをするよう伝えます',{mat:1,mo:-1,gi:-5},'まず雪かきをするよう伝えました。']]],
+[n=>'['+n+'] 寒いので、囲炉裏のそばで温かいお粥を炊こうと言っています。',[['一緒に温かいお粥を炊きます',{food:-2,mo:3,gi:12},'一緒に温かいお粥を炊いて食べました。'],['囲炉裏にあたらせるだけにします',{mo:1,gi:4},'囲炉裏にあたらせるだけにしました。'],['薪がもったいないので我慢させます',{mat:1,mo:-2,gi:-6},'薪がもったいないので我慢させました。']]]]
+],
 PL:{
 '야만바기리 쿠니히로':['布を深く被ったまま隅で一人鍛錬しました',{mo:1}],
 '카슈 키요미츠':['爪の手入れをしながら身だしなみに没頭しました',{mo:2}],
@@ -561,10 +635,18 @@ ko:{
  forgeC:n=>keul(n)+' 단조합니다',forgeD:n=>kga(n)+' 단조되어 혼마루에 합류했습니다.',forgeNo:'단조하지 않습니다',forgeNoD:'이번에는 단조를 보류했습니다. 옥강을 아껴 두었습니다.',
  ev:[n=>'시간 역행군 기습! 옥강 -'+n+', 영력 -2',n=>'시공이 일그러졌습니다. 영력 -'+n,()=>'혼마루에 감기가 돕니다. 신뢰도 -5',(f,m)=>'정부 보급품 도착: 군량 +'+f+', 옥강 +'+m,()=>'전원이 모여 옛 이야기를 나눴습니다. 신뢰도 +8',()=>'벚꽃잎이 혼마루에 흩날립니다. 신뢰도 +8',n=>'군량 창고에 습기. 군량 -'+n],
  yearEnd:(f,e)=>'연말 정산: 군량 -'+f+' / 영력 -'+e+' / 신뢰도 +2',starve:'군량 고갈. 굶주림이 이어집니다.',
- end:{en:'사니와의 영력이 바닥났습니다. 혼마루의 결계가 무너졌습니다.',mo:'신뢰도 붕괴. 도검남사들이 사니와를 떠났습니다. 혼마루는 텅 비었습니다.',win:'30년 완수! 역사는 지켜졌습니다.',sp:'혼마루를 떠나 단둘이 영원을 함께하기로 했습니다. 정부의 눈이 닿지 않는 곳에서 두 사람만의 조용한 나날이 이어집니다.'},
+ end:{en:'사니와의 영력이 바닥났습니다. 혼마루의 결계가 무너졌습니다.',mo:'신뢰도 붕괴. 도검남사들이 사니와를 떠났습니다. 혼마루는 텅 비었습니다.',win:'30년 완수! 역사는 지켜졌습니다.',fall:'30년이 흘렀지만 혼마루의 시간은 더 이상 흐르지 않습니다. 사니와는 타락한 채, 아무도 찾아오지 않는 영원한 혼마루에 갇히고 말았습니다.',sp:'혼마루를 떠나 단둘이 영원을 함께하기로 했습니다. 정부의 눈이 닿지 않는 곳에서 두 사람만의 조용한 나날이 이어집니다.'},
   spLog1:'30년이 지나도 곁에 남은 도검은 단 한 자루뿐이었습니다. 이 도검과 함께 정부의 눈을 피해 도주해, 단둘이 살아갈 길이 열렸습니다.',
   spLog2:n=>kga(n)+' 조용히 무릎을 꿇고 사니와를 올려다봅니다.',
   spQ:n=>kga(n)+' 당신에게 영원을 맹세합니다. 받아들이시겠습니까?',
+  dealH:'비밀스러운 서신',
+  dealT:'출진할 때마다 도검을 잃는 혼마루에, 정체를 숨긴 역사 수정주의자들이 비밀스러운 서신을 보내왔습니다. 「신뢰도의 80%를 내놓으시오. 그 대가로 도검들은 더 이상 출진하지 않아도 되고, 시간 역행군의 침략처럼 도검이 파괴될 수 있는 일도 일어나지 않을 것이오.」 이 거래를 수락하시겠습니까?',
+  dealYes:'예, 거래를 수락합니다',
+  dealYesD:'서신에 서명했습니다. 신뢰도의 80%를 내놓자 출진 명령이 사라지고 위협도 잠잠해졌습니다. 그러나 혼마루의 시간이 서서히 멈추어 갑니다.',
+  dealNo:'아니오, 거절합니다',
+  dealNoD:'서신을 불태워 거래를 거절했습니다.',
+  dealMark:'밀약',
+  seaLog:['봄이 찾아왔습니다. 정원의 벚나무에 꽃망울이 맺히고, 혼마루에 따스한 바람이 불어옵니다.','여름이 되었습니다. 매미 소리가 울려 퍼지고, 해 질 녘에는 반딧불이가 정원을 떠다닙니다.','가을이 깊어 갑니다. 단풍잎이 마당에 쌓이고, 선선한 바람이 혼마루를 감쌉니다.','겨울이 왔습니다. 처마 끝에 고드름이 맺히고, 정원에는 하얀 눈이 내려앉습니다.'],
  final:(c,sc,w)=>'도검 '+c+'자루 / 최종 점수: '+sc+(w?'':' (실패)'),
  intro:(nm,f,d)=>[
   ['사니와 ‘'+nm+'’ 혼마루 착임. 30년간 역사를 지켜 내야 합니다.','i'],
@@ -610,10 +692,18 @@ ja:{
  forgeC:n=>n+'を鍛刀する',forgeD:n=>n+'が鍛刀され、本丸に顕現しました。',forgeNo:'鍛刀しない',forgeNoD:'今回は鍛刀を見送りました。玉鋼を温存しました。',
  ev:[n=>'時間遡行軍の奇襲！玉鋼 -'+n+'、霊力 -2',n=>'時空が歪みました。霊力 -'+n,()=>'本丸で風邪が流行っています。信頼度 -5',(f,m)=>'政府の補給品が届きました: 兵糧 +'+f+'、玉鋼 +'+m,()=>'全員が集まって昔話をしました。信頼度 +8',()=>'桜の花びらが本丸に舞っています。信頼度 +8',n=>'兵糧庫に湿気。兵糧 -'+n],
  yearEnd:(f,e)=>'年末決算: 兵糧 -'+f+' / 霊力 -'+e+' / 信頼度 +2',starve:'兵糧が尽きました。飢えが続いています。',
- end:{en:'審神者の霊力が尽きました。本丸の結界が崩壊しました。',mo:'信頼度崩壊。刀剣男士たちが審神者のもとを去りました。本丸はもぬけの殻です。',win:'三十年完遂！歴史は守られました。',sp:'本丸を離れ、二人きりで永遠を共にすることにしました。政府の目が届かない場所で、二人だけの静かな日々が続きます。'},
+ end:{en:'審神者の霊力が尽きました。本丸の結界が崩壊しました。',mo:'信頼度崩壊。刀剣男士たちが審神者のもとを去りました。本丸はもぬけの殻です。',win:'三十年完遂！歴史は守られました。',fall:'三十年が過ぎても、本丸の時はもう流れません。審神者は堕ちたまま、誰も訪れない永遠の本丸に閉じ込められてしまいました。',sp:'本丸を離れ、二人きりで永遠を共にすることにしました。政府の目が届かない場所で、二人だけの静かな日々が続きます。'},
   spLog1:'三十年が過ぎても、そばに残った刀剣はたった一振りだけでした。この刀剣を連れて政府の目から逃れ、二人きりで生きていく道が開けました。',
   spLog2:n=>n+'は静かに膝をつき、審神者を見上げます。',
   spQ:n=>n+'があなたに永遠を誓います。受け入れますか？',
+  dealH:'秘密の書状',
+  dealT:'出陣のたびに刀剣を失う本丸へ、正体を隠した歴史修正主義者たちから秘密の書状が届きました。「信頼度の80%を差し出せ。その代わり、刀剣たちはもう出陣せずに済み、時間遡行軍の侵攻のように刀剣が破壊されかねない出来事も起こらなくなるだろう。」この取引を受けますか？',
+  dealYes:'はい、取引を受けます',
+  dealYesD:'書状に署名しました。信頼度の80%を差し出すと、出陣の命は消え、脅威も静まりました。しかし本丸の時は少しずつ止まっていきます。',
+  dealNo:'いいえ、断ります',
+  dealNoD:'書状を焼き捨て、取引を断りました。',
+  dealMark:'密約',
+  seaLog:['春が訪れました。庭の桜に蕾がつき、本丸に暖かな風が吹き込みます。','夏になりました。蝉の声が響き、夕暮れには蛍が庭を舞います。','秋が深まっていきます。紅葉が庭に積もり、涼しい風が本丸を包みます。','冬が来ました。軒先に氷柱が下がり、庭には白い雪が降り積もります。'],
  final:(c,sc,w)=>'刀剣 '+c+'振り / 最終スコア: '+sc+(w?'':' (失敗)'),
  intro:(nm,f,d)=>[
   ['審神者「'+nm+'」本丸に着任。三十年間、歴史を守り抜かなければなりません。','i'],
@@ -674,12 +764,14 @@ function kinYes(){
   s.kin=n;s.kins.push([n,s.day]);const un=(P.KS[n]||[]).some((e,i)=>!s.ks.includes(n+i));s.ksNew=un;if(un)s.rep=Math.min(s.rep,s.day);log(U.kinSet(N(n)),'i');render();
 }
 function kinNo(){if(spq){spq=0;$('md').style.display='none';return finish('win',true)}kinQ=null;$('md').style.display='none'}
-const fx=e=>Object.keys(e).map(k=>P.EF[k]+' '+(k==='gain'?N(e[k]):(e[k]>0?'+':'')+e[k])).join(' · ');
+const fx=e=>Object.keys(e).map(k=>k==='deal'?P.EF[k]:P.EF[k]+' '+(k==='gain'?N(e[k]):(e[k]>0?'+':'')+e[k])).join(' · ');
 const need=c=>c[3]&&Object.keys(c[1]).some(k=>c[1][k]<0&&(k==='food'||k==='mat')&&-c[1][k]>s[k]);
 const eff=c=>{const e=Object.assign({},c[1]);if(e.gi===undefined){const m=e.mo||0;e.gi=m>=4?m*4:m<=-4?m*2:0}if(!e.gi)delete e.gi;return e};
 
 // 이벤트 창은 "무슨 이벤트인지"만 기억해 두고, 글자는 그릴 때마다 현재 언어로 만듭니다.
 function build(d){
+  if(d.t==='DEAL'){const x=Math.floor(s.mo*0.8);return [U.dealT,[[U.dealYes,{mo:-x,gi:0,deal:1},U.dealYesD],[U.dealNo,{},U.dealNoD]],U.dealH,'deal']}
+  if(d.t==='DLS'){const x=P.DLS[d.sea][d.k];return [x[0](N(d.n),N(d.o)),x[1],U.askH(N(d.n)),'ask']}
   if(d.t==='DL'){const x=P.DL[d.k];return [x[0](N(d.n),N(d.o)),x[1],U.askH(N(d.n)),'ask']}
   if(d.t==='DI')return [U.discordRep(N(d.n),N(d.ob)),P.DI,U.repH(N(d.kin)),''];
   if(d.t==='KS'){const x=P.KS[d.kin][d.i];return [x[0],x[1],U.storyH(N(d.kin)),'story']}
@@ -697,6 +789,7 @@ function openIss(d){isd=d;draw();save();whenIdle(()=>{$('iq').style.display='fle
 
 function ask(){
   const n=s.roster[R(0,C()-1)],ot=s.roster.filter(x=>x!==n),o=ot.length?ot[R(0,ot.length-1)]:n;
+  if(Math.random()<0.4){const si=seasonOf(s.mon),sl=P.DLS[si],k2=R(0,sl.length-1);if(!(sl[k2][2]&&C()<2)){s.tgt=n;s.oth=o;log(U.askLog(N(n)),'i');openIss({t:'DLS',k:k2,sea:si,n,o});return}}
   let k;do k=R(0,P.DL.length-1);while(k===s.ld||(P.DL[k][2]&&C()<2));
   s.ld=k;s.tgt=n;s.oth=o;
   log(U.askLog(N(n)),'i');
@@ -721,22 +814,38 @@ function report(){
 function choose(i){
   const c=iss[1][i],e=eff(c),g=s.tgt;iss=null;isd=null;$('iq').style.display='none';
   s.hist.push([s.cur[0],s.cur[1],c[0],e]);
-  for(const k in e){if(k==='lv')s.lv+=e[k];else if(k==='gi')s.md[g]=Math.max(0,Math.min(100,s.md[g]+e[k]));else if(k==='go'){const q=s.oth;if(q&&s.md[q]!==undefined)s.md[q]=Math.max(0,Math.min(100,s.md[q]+e[k]))}else if(k==='gain')addSword(e[k]);else if(k==='hp'){if(g&&s.hp[g]!==undefined)s.hp[g]=Math.max(1,Math.min(100,s.hp[g]+e[k]))}else if(k==='ha')s.roster.forEach(x=>{s.hp[x]=Math.max(1,Math.min(100,s.hp[x]+e[k]))});else if(k==='ma')s.roster.forEach(x=>{s.md[x]=Math.max(0,Math.min(100,s.md[x]+e[k]))});else if(k==='eq')s.eq=(s.eq||0)+e[k];else s[k]+=e[k]}
+  for(const k in e){if(k==='lv')s.lv+=e[k];else if(k==='gi')s.md[g]=Math.max(0,Math.min(100,s.md[g]+e[k]));else if(k==='go'){const q=s.oth;if(q&&s.md[q]!==undefined)s.md[q]=Math.max(0,Math.min(100,s.md[q]+e[k]))}else if(k==='gain')addSword(e[k]);else if(k==='deal')s.deal=1;else if(k==='hp'){if(g&&s.hp[g]!==undefined)s.hp[g]=Math.max(1,Math.min(100,s.hp[g]+e[k]))}else if(k==='ha')s.roster.forEach(x=>{s.hp[x]=Math.max(1,Math.min(100,s.hp[x]+e[k]))});else if(k==='ma')s.roster.forEach(x=>{s.md[x]=Math.max(0,Math.min(100,s.md[x]+e[k]))});else if(k==='eq')s.eq=(s.eq||0)+e[k];else s[k]+=e[k]}
   clamp();log(c[2]+(fx(e)?' ('+fx(e)+')':''),'i');
   if(s.en<=0)return finish('en');
   if(s.mo<=0)return finish('mo');
   render();
 }
 function clamp(){['food','en','mat'].forEach(k=>{if(s[k]<0)s[k]=0});s.mo=Math.max(0,Math.min(100,s.mo));s.en=Math.min(100,s.en)}
+const SEA=['spring','summer','autumn','winter'];
+const seasonOf=m=>m>=2&&m<=4?0:m>=5&&m<=7?1:m>=8&&m<=10?2:3;
+let curSea=-1;
+function applySeason(i){
+  if(i===curSea)return;curSea=i;
+  document.documentElement.setAttribute('data-season',SEA[i]);
+  const fx=$('fx');if(!fx)return;
+  const n=i===1?10:16;let h='';
+  for(let k=0;k<n;k++){
+    const sz=i===3?3+Math.random()*4:i===1?4+Math.random()*3:8+Math.random()*7;
+    h+='<i class="fxp '+SEA[i]+'" style="--x:'+(Math.random()*100).toFixed(1)+'vw;--y:'+(10+Math.random()*80).toFixed(0)+'vh;--s:'+sz.toFixed(1)+'px;--d:'+(8+Math.random()*9).toFixed(1)+'s;--dl:-'+(Math.random()*14).toFixed(1)+'s;--dx:'+((Math.random()-.5)*30).toFixed(0)+'vw"></i>';
+  }
+  fx.innerHTML=h;
+}
 function render(){
+  const si=seasonOf(s.mon);applySeason(si);
+  if(!over&&s.sea!==si){s.sea=si;log(U.seaLog[si],'i')}
   $('who').textContent=U.who(name,N(first.n));
-  $('day').textContent=U.dayLine(s.day,s.mon+1,MAX)+' · ×'+spd+(paused?' ⏸':'')+(sor?' · '+U.sortieNow:'');ros();
+  $('day').textContent=U.dayLine(s.day,s.mon+1,MAX)+' · ×'+spd+(paused?' ⏸':'')+(sor?' · '+U.sortieNow:'')+(s.deal?' · '+U.dealMark:'');ros();
   const it=[[C(),0],[s.food,5],[s.en,10],[s.mat,3],[s.mo,25]];
   $('st').innerHTML=it.map(([v,lo],j)=>'<div class="c'+(j&&v<=lo?' low':'')+'"><small>'+U.stats[j]+'</small><span>'+v+'</span></div>').join('');
   save();
 }
-function lose(w){
-  if(C()>1&&w!==s.roster[0]){const n=w?s.roster.splice(s.roster.indexOf(w),1)[0]:s.roster.splice(R(1,C()-1),1)[0];delete s.hp[n];delete s.md[n];s.mo-=20;s.lost.push([n,s.day]);log(U.broke(N(n)),'b');if(s.kin===n){s.kin=null;log(U.kinGone,'w')}}
+function lose(w,fs){
+  if(C()>1&&w!==s.roster[0]){const n=w?s.roster.splice(s.roster.indexOf(w),1)[0]:s.roster.splice(R(1,C()-1),1)[0];delete s.hp[n];delete s.md[n];s.mo-=20;if(fs)s.brk=(s.brk||0)+1;s.lost.push([n,s.day]);log(U.broke(N(n)),'b');if(s.kin===n){s.kin=null;log(U.kinGone,'w')}}
   else{s.mo-=15;s.hp[first.n]=Math.min(s.hp[first.n],10);log(U.firstHurt(N(first.n)),'b')}
 }
 let sq=null,sor=null,sqp=[],sqs=false;
@@ -744,6 +853,7 @@ let spd=1,paused=false,prog=0,last=Date.now();
 function work(){
   const n=s.roster[R(0,C()-1)];
   let a=P.W[R(0,P.W.length-1)];
+  if(Math.random()<0.22){const ws=P.WS[seasonOf(s.mon)];a=ws[R(0,ws.length-1)]}
   if(P.PL[n]&&Math.random()<0.25)a=P.PL[n];
   if(a[2]==='x'&&st(n)===2&&Math.random()<0.6){
     s.hp[n]=Math.min(100,s.hp[n]+8);
@@ -775,7 +885,8 @@ function work(){
 }
 function month(){
   if(sor){sortieTick();return}
-  if(s.sch.includes(s.mon)){s.sch=s.sch.filter(x=>x!==s.mon);prog+=MS;openSquad();return}
+  if((s.brk||0)>=7&&!s.deal0){s.deal0=1;prog+=MS;openIss({t:'DEAL'});return}
+  if(s.sch.includes(s.mon)&&!s.deal){s.sch=s.sch.filter(x=>x!==s.mon);prog+=MS;openSquad();return}
   if(s.em===s.mon){s.em=-1;if(forgeEvent()){prog+=MS;return}}
   const k=Math.ceil(C()/2);
   for(let i=0;i<k;i++)work();
@@ -862,7 +973,7 @@ function sortieTick(){
     if(n!==s.kin)s.md[n]=Math.max(0,s.md[n]-3);
     const h1=st(n);
     if(h1>h0)log(U.injured(N(n),h1),'w');
-    if(Math.random()<(h0===2?(first.id==='y'?0.2:0.3):(first.id==='y'?0.01:0.03)))lose(n);
+    if(Math.random()<(h0===2?(first.id==='y'?0.2:0.3):(first.id==='y'?0.01:0.03)))lose(n,1);
   });
   sor=null;s.mon++;clamp();
   if(s.mo<=0)return finish('mo');
@@ -906,14 +1017,14 @@ function yearEnd(){
   const fc=C()*2+1,ne=Math.floor(s.en*(first.id==='s'?0.97:0.95)),ec=s.en-ne;
   s.food-=fc;s.en=ne;
   log(U.yearEnd(fc,ec),'');
-  if(s.food<0){s.food=0;s.mo-=10;log(U.starve,'b');lose()}
-  if(Math.random()<0.55)EV[R(0,EV.length-1)]();
+  if(s.food<0){s.food=0;s.mo-=10;log(U.starve,'b');if(!s.deal)lose()}
+  if(Math.random()<0.55){const ix=s.deal?[1,3,4,5,6]:null;EV[ix?ix[R(0,ix.length-1)]:R(0,EV.length-1)]()}
   s.mo+=2;
   s.roster.forEach(x=>{if(x!==s.kin)s.md[x]=Math.max(0,s.md[x]-4)});
   clamp();
   if(s.en<=0)return finish('en');
   if(s.mo<=0)return finish('mo');
-  if(s.day>=MAX){if(C()===1)return endAsk();return finish('win',true)}
+  if(s.day>=MAX){if(s.deal)return finish('fall');if(C()===1)return endAsk();return finish('win',true)}
   if(s.kin&&s.day>=s.rep){s.rep=s.day+R(1,2);report()}
 }
 let spq=0;
@@ -924,7 +1035,7 @@ function endAsk(){
   whenIdle(()=>{$('mq').textContent=U.spQ(N(n));$('md').style.display='flex'});
 }
 function finish(key,win){
-  if(!win&&s.mo<=0)key='mo';
+  if(!win&&s.mo<=0&&key!=='fall')key='mo';
   over=true;s.win=!!win;s.msg=key;render();
   log(U.end[key],win?'g':'b');
   log(U.final(C(),score(),win),'i');
@@ -933,6 +1044,7 @@ function finish(key,win){
   $('sr').style.display=$('re').style.display='block';whenIdle(()=>summary());
 }
 function intro(){
+  applySeason(seasonOf(new Date().getMonth()));
   $('game').style.display='none';$('intro').style.display='flex';$('sm').style.display='none';$('sq').style.display='none';
   $('hint').textContent='';$('nm').value=name;
   drawCont();
