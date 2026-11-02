@@ -530,7 +530,7 @@ const keul=w=>w+((w.charCodeAt(w.length-1)-44032)%28?'을':'를');
 const UI={
 ko:{
  title:'혼마루 30년 · 도검난무 로그 시뮬레이션',h1:'혼마루 30년',lead:'시간 역행군으로부터 역사를 지켜야 합니다.',ph:'사니와의 이름을 입력',pickp:'초기도를 한 자루 골라 주십시오.',needName:'먼저 사니와의 이름을 입력해 주십시오.',
- lgBtn:'日本語',cont:'이어하기',contInfo:(nm,f,y,m)=>'사니와 '+nm+' · '+f+' · '+y+'년 '+m+'월',contWarn:'초기도를 골라 새로 시작하면 이어하던 진행은 지워집니다.',recBtn:'플레이 기록',recNone:'아직 끝까지 플레이한 기록이 없습니다. 게임이 끝나면 이 기기에 자동으로 남습니다.',recClr:'기록 모두 지우기',recClrQ:'한 번 더 누르면 모두 지워집니다',back:'← 기록 목록',recNote:n=>'이 기기에 저장된 기록 '+n+'개 (최근 30개까지)',locale:'ko-KR',yes:'예',no:'아니오',close:'닫기',squadH:'부대 편성',sumBtn:'결과 요약',restart:'다시 시작 (R)',
+ lgBtn:'日本語',cont:'이어하기',contInfo:(nm,f,y,m)=>'사니와 '+nm+' · '+f+' · '+y+'년 '+m+'월',contWarn:'초기도를 골라 새로 시작하면 이어하던 진행은 지워집니다.',recBtn:'플레이 기록',recNone:'아직 끝까지 플레이한 기록이 없습니다. 게임이 끝나면 이 기기에 자동으로 남습니다.',recClr:'기록 모두 지우기',recClrQ:'한 번 더 누르면 모두 지워집니다',recBack:'← 기록 목록',recNote:n=>'이 기기에 저장된 기록 '+n+'개 (최근 30개까지)',locale:'ko-KR',yes:'예',no:'아니오',close:'닫기',squadH:'부대 편성',sumBtn:'결과 요약',restart:'다시 시작 (R)',
  date:(y,m)=>pad(y)+'년 '+pad(m)+'월',yr:'년',cnt:'자루',sep:', ',
  dayLine:(d,m,x)=>d+'년 '+m+'월 / '+x+'년',sortieNow:'출진 중',
  stats:['도검','군량','영력','옥강','신뢰도'],
@@ -576,7 +576,7 @@ ko:{
 },
 ja:{
  title:'本丸三十年 ・ 刀剣乱舞ログシミュレーション',h1:'本丸三十年',lead:'時間遡行軍から歴史を守らなければなりません。',ph:'審神者の名前を入力',pickp:'初期刀を一振り選んでください。',needName:'まず審神者の名前を入力してください。',
- lgBtn:'한국어',cont:'続きから',contInfo:(nm,f,y,m)=>'審神者 '+nm+' · '+f+' · '+y+'年 '+m+'月',contWarn:'初期刀を選んで新しく始めると、続きのデータは消えます。',recBtn:'プレイ記録',recNone:'まだ最後までプレイした記録がありません。ゲームが終わるとこの端末に自動で残ります。',recClr:'記録をすべて消す',recClrQ:'もう一度押すとすべて消えます',back:'← 記録一覧',recNote:n=>'この端末に保存された記録 '+n+'件 (最新30件まで)',locale:'ja-JP',yes:'はい',no:'いいえ',close:'閉じる',squadH:'部隊編成',sumBtn:'結果まとめ',restart:'もう一度 (R)',
+ lgBtn:'한국어',cont:'続きから',contInfo:(nm,f,y,m)=>'審神者 '+nm+' · '+f+' · '+y+'年 '+m+'月',contWarn:'初期刀を選んで新しく始めると、続きのデータは消えます。',recBtn:'プレイ記録',recNone:'まだ最後までプレイした記録がありません。ゲームが終わるとこの端末に自動で残ります。',recClr:'記録をすべて消す',recClrQ:'もう一度押すとすべて消えます',recBack:'← 記録一覧',recNote:n=>'この端末に保存された記録 '+n+'件 (最新30件まで)',locale:'ja-JP',yes:'はい',no:'いいえ',close:'閉じる',squadH:'部隊編成',sumBtn:'結果まとめ',restart:'もう一度 (R)',
  date:(y,m)=>pad(y)+'年 '+pad(m)+'月',yr:'年',cnt:'振り',sep:'、',
  dayLine:(d,m,x)=>d+'年 '+m+'月 / '+x+'年',sortieNow:'出陣中',
  stats:['刀剣','兵糧','霊力','玉鋼','信頼度'],
@@ -806,7 +806,7 @@ function summary(d,ri){
   const k=[d.day+U.yr,d.sc,d.n+U.cnt,d.mo,d.en,d.food];
   const hist=d.hist||[],t={};hist.forEach(h=>{for(const x in h[3])if(x!=='gain')t[x]=(t[x]||0)+h[3][x]});
   for(const x in t)if(!t[x])delete t[x];
-  $('sb').innerHTML=(ri!==undefined?'<button class="bk" onclick="records()">'+U.back+'</button><p class="q">'+fmtAt(d.at)+'</p>':'')
+  $('sb').innerHTML=(ri!==undefined?'<button class="bk" onclick="records()">'+U.recBack+'</button><p class="q">'+fmtAt(d.at)+'</p>':'')
    +'<div class="k">'+k.map((x,j)=>'<div>'+U.sumK[j]+'<br><b>'+x+'</b></div>').join('')+'</div>'
    +'<p>'+U.sumInfo(esc(d.name),N(SW[d.fi].n),d.kins.map(fmtD).join(' → ')||U.none,d.srt,d.smat,d.roster.map(x=>N(x[0])+' '+U.hpL+' '+x[1]+' '+U.moodL+' '+x[2]).join(U.sep),d.lost.map(fmtD).join(U.sep))+'</p>'
    +'<p>'+U.histL(hist.length)+(hist.length?'<br><span class="q">'+U.cumL+(fx(t)||U.nochange)+'</span>':'')+'</p><ul>'
