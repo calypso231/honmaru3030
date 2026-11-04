@@ -473,6 +473,7 @@ ko:{
   dealNoD:'서신을 불태워 거래를 거절했습니다.',
   dealMark:'밀약',
   lastH:'마지막 순간',
+  lastSub:', 당신의 모든 것을 바칩니다.',
   lastLog:'마지막 남은 도검의 몸에 가느다란 금이 번집니다.',
   lastT:(n,nm)=>'더는 버틸 수 없다는 사실을 아는 듯, 마지막 남은 '+n+'의 몸에 금이 번집니다. 그 순간 혼마루의 모든 소리가 멎고 시간이 멈춥니다. '+kga(n)+' 한참 만에 고개를 돌려, 화면 너머의 사니와 ‘'+nm+'’ 쪽을 처음으로 똑바로 바라봅니다. 이 순간을 이미 알고 있었다는 듯 조용한 얼굴입니다.',
   lastC:n=>[['끝까지 곁을 지킵니다',{},n+'의 몸이 사니와의 곁에서 조용히 부서져 갑니다. 도검은 미소를 지은 채 마지막까지 사니와의 손을 놓지 않았습니다.'],['한 번만 더 기회를 줍니다',{en:-20,mo:-10,hp:-100},'사니와의 영력을 나누어 받은 '+n+'의 금이 가까스로 멈춥니다. 혼마루에 다시 시간이 흐르기 시작했지만, 도검의 체력은 거의 남지 않았습니다.'],['시선을 피합니다',{},'사니와가 눈길을 피한 것을 알아차린 듯 '+kga(n)+' 희미하게 웃고는, 아무 소리 없이 부서져 갑니다.']],
@@ -586,7 +587,7 @@ const dis=c=>isd.t==='FG'?!!(c[1].mat&&-c[1].mat>s.mat):isd.t==='LS'?!!((c[1].en
 function draw(){
   const b=build(isd);iss=[b[0],b[1]];
   $('ih').className=b[3];$('ih').textContent=b[2];$('it').textContent=b[0];s.cur=[s.day,b[0]];
-  $('ic').innerHTML=b[1].map((c,i)=>'<button'+(dis(c)?' disabled':'')+' onclick="choose('+i+')">'+c[0]+'<small>'+(fx(eff(c))||U.nochange)+'</small></button>').join('');
+  $('ic').innerHTML=b[1].map((c,i)=>'<button'+(dis(c)?' disabled':'')+' onclick="choose('+i+')">'+c[0]+'<small>'+(isd.t==='LS'&&i===1?esc(name)+U.lastSub:(fx(eff(c))||U.nochange))+'</small></button>').join('');
 }
 function openIss(d){isd=d;draw();save();whenIdle(()=>{$('iq').style.display='flex'})}
 
