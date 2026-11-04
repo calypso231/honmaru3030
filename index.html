@@ -27,7 +27,8 @@ header b{color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowr
 .c.low span{color:var(--bad)}
 #log{flex:1;min-height:0;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px}
 .l{margin:0 0 2px}.l .d{color:var(--dim)}
-.g{color:var(--good)}.w{color:var(--warn)}.b{color:var(--bad)}.i{color:var(--info)}
+.g{color:var(--good)}.w{color:var(--warn)}.b{color:var(--bad)}
+.m{color:var(--dim);font-style:italic}.i{color:var(--info)}
 #mid{flex:1;min-height:0;display:flex;gap:6px}
 #mid #log{min-width:0}
 #ros{width:112px;flex:none;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
@@ -471,6 +472,12 @@ ko:{
   dealNo:'아니오, 거절합니다',
   dealNoD:'서신을 불태워 거래를 거절했습니다.',
   dealMark:'밀약',
+  mPause:['시간이 멈춘 혼마루에서 도검들이 하던 동작 그대로 굳은 듯 서 있습니다. 시간이 다시 흐르기 시작하자 모두 어리둥절한 표정으로 서로를 돌아봅니다.','잠시 모든 소리가 사라졌다가 돌아옵니다. 도검들은 누군가 자신들을 지켜보고 있었던 듯한 기분에 문득 고개를 들어 하늘을 올려다봅니다.','잠깐 흐름이 끊긴 것 같다고 느낀 도검 몇몇이 말없이 서로의 얼굴을 살핍니다. 이유를 아는 이는 없습니다.'],
+  mFast:['계절이 눈 깜짝할 사이에 바뀌고 있습니다. 도검들은 쏜살같이 지나가는 시간을 눈으로 쫓다 지쳐, 잠깐 마루에 걸터앉아 숨을 고릅니다.','해와 달이 유난히 빠르게 오가는 듯합니다. 도검들은 오늘이 어제였는지 내일이었는지 헷갈려 하며 자꾸 정원의 나무를 올려다봅니다.'],
+  mDv:[n=>kga(n)+' 낯설지 않은 얼굴로 혼마루를 둘러봅니다. 처음 오는 곳일 텐데, 어딘가 오래 머문 적이 있는 듯한 눈빛입니다.',n=>n+'의 시선이 한동안 마당 한구석에 머뭅니다. 그곳에 무엇이 있었는지는 본인도 기억하지 못하는 듯합니다.',n=>'단조를 마치고 눈을 뜬 '+n+'에게서 잠깐, 이 광경을 이미 본 적이 있다는 듯한 기색이 스칩니다.'],
+  mCont:['혼마루의 공기가 잠시 일렁였다가 가라앉습니다. 도검들은 꿈에서 깬 사람처럼 눈을 깜박이다가 하던 일로 돌아갑니다.','도검들이 잠깐 멍하니 서 있다가, 어디까지 하고 있었는지 서로 눈짓으로 확인하며 하던 일을 이어 갑니다.'],
+  mFall:['혼마루의 괘종시계가 이상하게도 낯익은 시각에서 멈춰 있습니다. 마당 한쪽에는 누가 태웠는지 모를 서신의 재가 남아 있습니다.','처음 와 본 혼마루인데도 복도 끝 그림자가 낯익게 느껴집니다. 문득 오래 머물렀던 곳에 돌아온 듯한 기분이 듭니다.'],
+  dealMeta:' 서신의 봉인에서 어디선가 맡아 본 듯한 향이 희미하게 풍깁니다.',
   prH:(a,b)=>'인연의 대화: '+a+' · '+b,
   prLog:(a,b)=>a+', '+b+' 두 도검 사이에 이야기가 오가고 있습니다.',
   modeN:'보통',modeH:'하드',hardMark:'하드',
@@ -494,6 +501,13 @@ ko:{
 let P=L.ko,U=UI.ko;
 let hard=0;try{hard=localStorage.getItem('hm30-hard')==='1'?1:0}catch(e){}
 const H=()=>!!(s&&s.hard);
+function meta(t){
+  if(!s||over||(s.mx||0)>=2)return false;
+  s.mx=(s.mx||0)+1;log(t,'m');return true;
+}
+const pick1=a=>a[R(0,a.length-1)];
+const fallSeen=()=>{try{return localStorage.getItem('hm30-fall')==='1'}catch(e){return false}};
+let pat=0;
 const fid=()=>s.roster.includes(first.n)?first.id:'';
 function setMode(v){
   hard=v;try{localStorage.setItem('hm30-hard',v?'1':'0')}catch(e){}
@@ -553,7 +567,7 @@ const eff=c=>{const e=Object.assign({},c[1]);if(e.gi===undefined){const m=e.mo||
 
 // 이벤트 창은 "무슨 이벤트인지"만 기억해 두고, 글자는 그릴 때마다 현재 언어로 만듭니다.
 function build(d){
-  if(d.t==='DEAL'){const x=Math.floor(s.mo*0.8);return [U.dealT,[[U.dealYes,{mo:-x,gi:0,deal:1},U.dealYesD],[U.dealNo,{},U.dealNoD]],U.dealH,'deal']}
+  if(d.t==='DEAL'){const x=Math.floor(s.mo*0.8);return [U.dealT+(fallSeen()?U.dealMeta:''),[[U.dealYes,{mo:-x,gi:0,deal:1},U.dealYesD],[U.dealNo,{},U.dealNoD]],U.dealH,'deal']}
   if(d.t==='DLS'){const x=P.DLS[d.sea][d.k];return [x[0](d.n,d.o),x[1],U.askH(d.n),'ask']}
   if(d.t==='DL'){const x=P.DL[d.k];return [x[0](d.n,d.o),x[1],U.askH(d.n),'ask']}
   if(d.t==='DI')return [U.discordRep(d.n,d.ob),P.DI,U.repH(d.kin),''];
@@ -679,6 +693,7 @@ function work(){
   }
 }
 function month(){
+  if(spd>=10&&!paused){s.fm=(s.fm||0)+1;if(s.fm>=36&&!s.ff&&meta(pick1(U.mFast)))s.ff=1}
   if(sor){sortieTick();return}
   if((s.brk||0)>=7&&!s.deal0){s.deal0=1;prog+=MS;openIss({t:'DEAL'});return}
   if(s.sch.includes(s.mon)&&!s.deal){s.sch=s.sch.filter(x=>x!==s.mon);prog+=MS;openSquad();return}
@@ -785,6 +800,7 @@ function pickEm(sc){
 function addSword(n){
   if(s.roster.includes(n))return;
   s.roster.push(n);s.hp[n]=100;s.md[n]=70;
+  if(loadRecs().some(r=>(r.lost||[]).some(x=>x[0]===n)))meta(pick1(U.mDv)(n));
 }
 function forgeEvent(){
   const cand=ALL.filter(x=>!s.roster.includes(x));
@@ -797,7 +813,12 @@ function forgeEvent(){
   return true;
 }
 function setSpd(v){
+  const wp=paused;
   if(v===0)paused=!paused;else{spd=v;paused=false}
+  if(s&&!over){
+    if(!wp&&paused)pat=Date.now();
+    else if(wp&&!paused&&pat&&Date.now()-pat>=15000&&Math.random()<0.6){meta(pick1(U.mPause));pat=0}
+  }
   document.querySelectorAll('#acts .a').forEach(b=>b.classList.toggle('on',+b.dataset.v===(paused?0:spd)));
   $('acts').children[0].textContent=paused?'▶':'⏸';
   if(s)render();
@@ -833,6 +854,7 @@ function endAsk(){
   whenIdle(()=>{$('mq').textContent=U.spQ(n);$('md').style.display='flex'});
 }
 function finish(key,win){
+  if(key==='fall')try{localStorage.setItem('hm30-fall','1')}catch(e){}
   if(!win&&s.mo<=0&&key!=='fall')key='mo';
   over=true;s.win=!!win;s.msg=key;render();
   log(U.end[key],win?'g':'b');
@@ -858,6 +880,7 @@ function pick(i){
   document.querySelectorAll('#acts .a').forEach(b=>b.style.display='');
   $('re').style.display=$('sr').style.display='none';
   U.intro(esc(name),first.n,P.SWD[i]).forEach(x=>log(x[0],x[1]));
+  pat=0;if(fallSeen())meta(pick1(U.mFall));
   if(hard)log(U.hardIntro[0],U.hardIntro[1]);
   setSpd(1);
   render();
@@ -906,6 +929,7 @@ function cont(){
   if(isd){draw();$('iq').style.display='flex'}else $('iq').style.display='none';
   if(sq!==null){renderSq();$('sq').style.display='flex'}else $('sq').style.display='none';
   (d.q||[]).forEach(x=>Q.push(x));if(Q.length&&!qt)pump();
+  pat=0;if(Math.random()<0.5)meta(pick1(U.mCont));
   render();
 }
 function loadRecs(){try{const r=JSON.parse(localStorage.getItem(RK));return Array.isArray(r)?r:[]}catch(e){return []}}
