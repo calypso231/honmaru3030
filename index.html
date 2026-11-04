@@ -461,7 +461,7 @@ ko:{
  forgeC:n=>keul(n)+' 단조합니다',forgeD:n=>kga(n)+' 단조되어 혼마루에 합류했습니다.',forgeNo:'단조하지 않습니다',forgeNoD:'이번에는 단조를 보류했습니다. 옥강을 아껴 두었습니다.',
  ev:[n=>'시간 역행군 기습! 옥강 -'+n+', 영력 -2',n=>'시공이 일그러졌습니다. 영력 -'+n,()=>'혼마루에 감기가 돕니다. 신뢰도 -5',(f,m)=>'정부 보급품 도착: 군량 +'+f+', 옥강 +'+m,()=>'전원이 모여 옛 이야기를 나눴습니다. 신뢰도 +8',()=>'벚꽃잎이 혼마루에 흩날립니다. 신뢰도 +8',n=>'군량 창고에 습기. 군량 -'+n],
  yearEnd:(f,e)=>'연말 정산: 군량 -'+f+' / 영력 -'+e+' / 신뢰도 +2',starve:'군량 고갈. 굶주림이 이어집니다.',
- end:{en:'사니와의 영력이 바닥났습니다. 혼마루의 결계가 무너졌습니다.',mo:'신뢰도 붕괴. 도검남사들이 사니와를 떠났습니다. 혼마루는 텅 비었습니다.',last:'마지막 도검이 파괴되었습니다. 혼마루에는 아무도 남지 않았습니다.',win:'30년 완수! 역사는 지켜졌습니다.',fall:'30년이 흘렀지만 혼마루의 시간은 더 이상 흐르지 않습니다. 사니와는 타락한 채, 아무도 찾아오지 않는 영원한 혼마루에 갇히고 말았습니다.',sp:'혼마루를 떠나 단둘이 영원을 함께하기로 했습니다. 정부의 눈이 닿지 않는 곳에서 두 사람만의 조용한 나날이 이어집니다.'},
+ end:{en:'사니와의 영력이 바닥났습니다. 혼마루의 결계가 무너졌습니다.',mo:'신뢰도 붕괴. 도검남사들이 사니와를 떠났습니다. 혼마루는 텅 비었습니다.',last:'마지막 도검이 파괴되었습니다. 혼마루에는 아무도 남지 않았습니다.',lastA:'마지막 도검이 사니와의 곁에서 조용히 부서졌습니다. 혼마루에는 아무도 남지 않았습니다.',win:'30년 완수! 역사는 지켜졌습니다.',fall:'30년이 흘렀지만 혼마루의 시간은 더 이상 흐르지 않습니다. 사니와는 타락한 채, 아무도 찾아오지 않는 영원한 혼마루에 갇히고 말았습니다.',sp:'혼마루를 떠나 단둘이 영원을 함께하기로 했습니다. 정부의 눈이 닿지 않는 곳에서 두 사람만의 조용한 나날이 이어집니다.'},
   spLog1:'30년이 지나도 곁에 남은 도검은 단 한 자루뿐이었습니다. 이 도검과 함께 정부의 눈을 피해 도주해, 단둘이 살아갈 길이 열렸습니다.',
   spLog2:n=>kga(n)+' 조용히 무릎을 꿇고 사니와를 올려다봅니다.',
   spQ:n=>kga(n)+' 당신에게 영원을 맹세합니다. 받아들이시겠습니까?',
@@ -472,6 +472,10 @@ ko:{
   dealNo:'아니오, 거절합니다',
   dealNoD:'서신을 불태워 거래를 거절했습니다.',
   dealMark:'밀약',
+  lastH:'마지막 순간',
+  lastLog:'마지막 남은 도검의 몸에 가느다란 금이 번집니다.',
+  lastT:(n,nm)=>'더는 버틸 수 없다는 사실을 아는 듯, 마지막 남은 '+n+'의 몸에 금이 번집니다. 그 순간 혼마루의 모든 소리가 멎고 시간이 멈춥니다. '+kga(n)+' 한참 만에 고개를 돌려, 화면 너머의 사니와 ‘'+nm+'’ 쪽을 처음으로 똑바로 바라봅니다. 이 순간을 이미 알고 있었다는 듯 조용한 얼굴입니다.',
+  lastC:n=>[['끝까지 곁을 지킵니다',{},n+'의 몸이 사니와의 곁에서 조용히 부서져 갑니다. 도검은 미소를 지은 채 마지막까지 사니와의 손을 놓지 않았습니다.'],['한 번만 더 기회를 줍니다',{en:-20,mo:-10,hp:-100},'사니와의 영력을 나누어 받은 '+n+'의 금이 가까스로 멈춥니다. 혼마루에 다시 시간이 흐르기 시작했지만, 도검의 체력은 거의 남지 않았습니다.'],['시선을 피합니다',{},'사니와가 눈길을 피한 것을 알아차린 듯 '+kga(n)+' 희미하게 웃고는, 아무 소리 없이 부서져 갑니다.']],
   mPause:['시간이 멈춘 혼마루에서 도검들이 하던 동작 그대로 굳은 듯 서 있습니다. 시간이 다시 흐르기 시작하자 모두 어리둥절한 표정으로 서로를 돌아봅니다.','잠시 모든 소리가 사라졌다가 돌아옵니다. 도검들은 누군가 자신들을 지켜보고 있었던 듯한 기분에 문득 고개를 들어 하늘을 올려다봅니다.','잠깐 흐름이 끊긴 것 같다고 느낀 도검 몇몇이 말없이 서로의 얼굴을 살핍니다. 이유를 아는 이는 없습니다.'],
   mFast:['계절이 눈 깜짝할 사이에 바뀌고 있습니다. 도검들은 쏜살같이 지나가는 시간을 눈으로 쫓다 지쳐, 잠깐 마루에 걸터앉아 숨을 고릅니다.','해와 달이 유난히 빠르게 오가는 듯합니다. 도검들은 오늘이 어제였는지 내일이었는지 헷갈려 하며 자꾸 정원의 나무를 올려다봅니다.'],
   mDv:[n=>kga(n)+' 낯설지 않은 얼굴로 혼마루를 둘러봅니다. 처음 오는 곳일 텐데, 어딘가 오래 머문 적이 있는 듯한 눈빛입니다.',n=>n+'의 시선이 한동안 마당 한구석에 머뭅니다. 그곳에 무엇이 있었는지는 본인도 기억하지 못하는 듯합니다.',n=>'단조를 마치고 눈을 뜬 '+n+'에게서 잠깐, 이 광경을 이미 본 적이 있다는 듯한 기색이 스칩니다.'],
@@ -575,9 +579,10 @@ function build(d){
   if(d.t==='DS'){const x=P.DS[d.n];return ['['+d.n+'] '+x[0],x[1],U.repH(d.kin),'']}
   if(d.t==='IW'||d.t==='IS'){const x=P[d.t][d.k];return [x[0](d.n),x[1],U.repH(d.kin),'']}
   if(d.t==='PR'){const x=P.PR[d.k];return [x[2],x[3],U.prH(x[0],x[1]),'story']}
+  if(d.t==='LS')return [U.lastT(d.n,name),U.lastC(d.n),U.lastH,'deal'];
   if(d.t==='FG')return [U.forgeT(FC,s.mat),d.pk.map(n=>[U.forgeC(n),{mat:-FC,gain:n},U.forgeD(n)]).concat([[U.forgeNo,{},U.forgeNoD]]),U.forgeH,'forge'];
 }
-const dis=c=>isd.t==='FG'?!!(c[1].mat&&-c[1].mat>s.mat):need(c);
+const dis=c=>isd.t==='FG'?!!(c[1].mat&&-c[1].mat>s.mat):isd.t==='LS'?!!((c[1].en&&s.en+c[1].en<=0)||(c[1].mo&&s.mo+c[1].mo<=0)):need(c);
 function draw(){
   const b=build(isd);iss=[b[0],b[1]];
   $('ih').className=b[3];$('ih').textContent=b[2];$('it').textContent=b[0];s.cur=[s.day,b[0]];
@@ -618,10 +623,11 @@ function report(){
   log(U.repLog(kin),'w');
 }
 function choose(i){
-  const c=iss[1][i],e=eff(c),g=s.tgt;iss=null;isd=null;$('iq').style.display='none';
+  const c=iss[1][i],e=eff(c),g=s.tgt,dd=isd;iss=null;isd=null;$('iq').style.display='none';
   s.hist.push([s.cur[0],s.cur[1],c[0],e]);
   for(const k in e){if(k==='lv')s.lv+=e[k];else if(k==='gi')s.md[g]=Math.max(0,Math.min(100,s.md[g]+e[k]));else if(k==='go'){const q=s.oth;if(q&&s.md[q]!==undefined)s.md[q]=Math.max(0,Math.min(100,s.md[q]+e[k]))}else if(k==='gain')addSword(e[k]);else if(k==='deal')s.deal=1;else if(k==='hp'){if(g&&s.hp[g]!==undefined)s.hp[g]=Math.max(1,Math.min(100,s.hp[g]+e[k]))}else if(k==='ha')s.roster.forEach(x=>{s.hp[x]=Math.max(1,Math.min(100,s.hp[x]+e[k]))});else if(k==='ma')s.roster.forEach(x=>{s.md[x]=Math.max(0,Math.min(100,s.md[x]+e[k]))});else if(k==='eq')s.eq=(s.eq||0)+e[k];else s[k]+=e[k]}
   clamp();log(c[2]+(fx(e)?' ('+fx(e)+')':''),'i');
+  if(dd&&dd.t==='LS'&&i!==1)return lastEnd(i===0?'lastA':'last',dd.fs);
   if(s.en<=0)return finish('en');
   if(s.mo<=0)return finish('mo');
   render();
@@ -653,8 +659,16 @@ function render(){
 function lose(w,fs){
   const hk=H()&&!!w&&s.roster.includes(w);
   if(C()>1&&(w!==s.roster[0]||hk)){const n=w?s.roster.splice(s.roster.indexOf(w),1)[0]:s.roster.splice(R(1,C()-1),1)[0];delete s.hp[n];delete s.md[n];s.mo-=H()?25:20;if(fs)s.brk=(s.brk||0)+1;s.lost.push([n,s.day]);log(n===first.n?U.firstBroke(n):U.broke(n),'b');if(s.kin===n){s.kin=null;log(U.kinGone,'w')}}
-  else if(hk){const n=s.roster.splice(0,1)[0];delete s.hp[n];delete s.md[n];if(fs)s.brk=(s.brk||0)+1;s.lost.push([n,s.day]);s.kin=null;log(n===first.n?U.firstBroke(n):U.broke(n),'b');finish('last')}
+  else if(hk){
+    if(!s.ls){s.ls=1;s.tgt=s.roster[0];log(U.lastLog,'b');openIss({t:'LS',n:s.roster[0],fs:fs?1:0});return}
+    lastEnd('last',fs);
+  }
   else{const t=s.roster[0];s.mo-=15;s.hp[t]=Math.min(s.hp[t],10);log(t===first.n?U.firstHurt(t):U.lastHurt(t),'b')}
+}
+function lastEnd(key,fs){
+  const n=s.roster.splice(0,1)[0];delete s.hp[n];delete s.md[n];
+  if(fs)s.brk=(s.brk||0)+1;s.lost.push([n,s.day]);s.kin=null;
+  log(n===first.n?U.firstBroke(n):U.broke(n),'b');finish(key);
 }
 let sq=null,sor=null,sqp=[],sqs=false;
 let spd=1,paused=false,prog=0,last=Date.now();
@@ -699,7 +713,7 @@ function month(){
   if(s.sch.includes(s.mon)&&!s.deal){s.sch=s.sch.filter(x=>x!==s.mon);prog+=MS;openSquad();return}
   if(s.em===s.mon){s.em=-1;if(forgeEvent()){prog+=MS;return}}
   const k=Math.ceil(C()/2);
-  for(let i=0;i<k&&!over;i++)work();
+  for(let i=0;i<k&&!over&&iss===null;i++)work();
   if(over)return;
   s.roster.forEach(x=>{s.hp[x]=Math.min(100,s.hp[x]+1);s.md[x]=Math.min(100,s.md[x]+1)});
   if(C()>1)s.roster.forEach(x=>{
@@ -844,7 +858,7 @@ function yearEnd(){
   if(s.en<=0)return finish('en');
   if(s.mo<=0)return finish('mo');
   if(s.day>=MAX){if(s.deal)return finish('fall');if(C()===1)return endAsk();return finish('win',true)}
-  if(s.kin&&s.day>=s.rep){s.rep=s.day+R(1,2);report()}
+  if(s.kin&&s.day>=s.rep&&iss===null){s.rep=s.day+R(1,2);report()}
 }
 let spq=0;
 function endAsk(){
